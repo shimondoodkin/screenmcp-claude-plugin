@@ -1,0 +1,10 @@
+{
+  "name": "screenmcp-claude-plugin",
+  "version": "0.1.0",
+  "description": "Local desktop vision and control for Claude — bundles the standalone ScreenMCP stdio server (screenshot, click, type, window management) with self-installing Python dependencies.",
+  "author": {
+    "name": "Shimon Doodkin"
+  },
+  "homepage": "https://github.com/shimondoodkin/screenmcp-claude-plugin",
+  "keywords": ["mcp", "desktop", "automation", "screenshot", "computer-use", "screenmcp"]
+}
