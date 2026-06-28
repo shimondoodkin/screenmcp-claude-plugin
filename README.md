@@ -10,12 +10,14 @@ desktop directly over stdio.
 
 ## Install
 
+This repo doubles as its own Claude Code marketplace. In Claude Code:
+
 ```
-/plugin install screenmcp-claude-plugin@<marketplace>
+/plugin marketplace add shimondoodkin/screenmcp-claude-plugin
+/plugin install screenmcp-claude-plugin@screenmcp-claude-plugin
 ```
 
-…or add this repo to a marketplace and install it from there. Once installed, the
-`screenmcp-local` MCP server registers automatically.
+Once installed, the `screenmcp-local` MCP server registers automatically.
 
 ## Self-installing dependencies
 
@@ -53,6 +55,7 @@ click space to Claude's vision limits. Override with `max_width`/`max_height`
 
 ```
 .claude-plugin/plugin.json   plugin manifest
+.claude-plugin/marketplace.json  makes this repo installable as a marketplace
 .mcp.json                    registers the screenmcp-local server
 bootstrap.py                 self-installing launcher → screenmcp_cli.run()
 screenmcp_cli.py             vendored single-file stdio MCP server
