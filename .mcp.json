@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "screenmcp-local": {
-      "command": "python",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/bootstrap.py"]
+      "command": "${CLAUDE_PLUGIN_ROOT}/screenmcp-local",
+      "args": []
     }
   }
 }

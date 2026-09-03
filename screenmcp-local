@@ -1,0 +1,18 @@
+#!/bin/sh
+# Launcher for the screenmcp-local MCP server on macOS and Linux.
+# (Windows uses screenmcp-local.cmd next to this file.)
+#
+# Finds a Python 3.9+ interpreter — `python3` first, since macOS and most Linux
+# distributions ship no `python` — and hands off to bootstrap.py, which
+# installs the runtime dependencies into a private venv on first run.
+# Set SCREENMCP_PYTHON to force a specific interpreter.
+here=$(cd "$(dirname "$0")" && pwd)
+for py in "$SCREENMCP_PYTHON" python3 python; do
+  [ -n "$py" ] || continue
+  if command -v "$py" >/dev/null 2>&1 &&
+     "$py" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)' >/dev/null 2>&1; then
+    exec "$py" "$here/bootstrap.py" "$@"
+  fi
+done
+echo "[screenmcp] Python 3.9+ not found (tried python3, python). Install Python 3 or set SCREENMCP_PYTHON." >&2
+exit 1

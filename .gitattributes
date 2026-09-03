@@ -1,0 +1,4 @@
+# The Windows launcher must keep CRLF line endings (cmd.exe label handling);
+# the POSIX launcher must stay LF and executable.
+screenmcp-local.cmd text eol=crlf
+screenmcp-local     text eol=lf
