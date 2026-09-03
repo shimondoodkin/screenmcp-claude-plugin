@@ -21,21 +21,36 @@ Once installed, the `screenmcp-local` MCP server registers automatically.
 
 ## Self-installing dependencies
 
-The plugin's `.mcp.json` launches `bootstrap.py`, which on first run ensures the
-Python runtime dependencies are importable and installs any that are missing
-(preferring `uv pip`, falling back to `python -m pip`):
+The plugin's `.mcp.json` runs the `screenmcp-local` launcher (a `sh` script on
+macOS/Linux, `screenmcp-local.cmd` on Windows). It finds a **Python 3.9+**
+interpreter — `python3` first on macOS/Linux, `python` / `py -3` first on
+Windows — and hands off to `bootstrap.py`. On first run `bootstrap.py` creates a
+private virtual environment and installs the runtime dependencies into it
+(preferring `uv`, falling back to `python -m pip`):
 
 ```
 mss  pynput  Pillow  pyperclip  pygetwindow   # (pygetwindow: Windows only)
 ```
 
-So there is normally **nothing to install by hand**. You just need Python 3.9+ on
-`PATH`. Optional extras (install only if needed):
+The venv is kept in `$CLAUDE_PLUGIN_DATA` (persistent across plugin updates) or,
+outside Claude Code, in `~/.cache/screenmcp-claude-plugin` (`%LOCALAPPDATA%` on
+Windows). Nothing is installed into your system or global Python, and it works
+with "externally managed" interpreters (Homebrew, Debian/Ubuntu) that refuse
+plain `pip install`.
+
+So there is normally **nothing to install by hand**. You just need Python 3.9+
+on `PATH` (on macOS the `python3` that comes with the Xcode Command Line Tools is
+enough). Optional extras (install only if needed):
 
 ```
-pip install opencv-python   # camera / list_cameras
-pip install simpleaudio     # play_audio
+python3 bootstrap.py --extras camera   # camera / list_cameras  (opencv-python)
+python3 bootstrap.py --extras audio    # play_audio             (simpleaudio)
+python3 bootstrap.py --extras all
 ```
+
+(`python bootstrap.py ...` on Windows.) Run `bootstrap.py --check` to see which
+interpreter and venv the server uses. Set `SCREENMCP_PYTHON=/path/to/python` to
+force a specific interpreter.
 
 ## What Claude can do
 
@@ -57,7 +72,9 @@ click space to Claude's vision limits. Override with `max_width`/`max_height`
 .claude-plugin/plugin.json   plugin manifest
 .claude-plugin/marketplace.json  makes this repo installable as a marketplace
 .mcp.json                    registers the screenmcp-local server
-bootstrap.py                 self-installing launcher → screenmcp_cli.run()
+screenmcp-local              launcher (macOS/Linux): finds python3 → bootstrap.py
+screenmcp-local.cmd          launcher (Windows): finds python / py -3 → bootstrap.py
+bootstrap.py                 creates a private venv, installs deps → screenmcp_cli.run()
 screenmcp_cli.py             vendored single-file stdio MCP server
 pyproject.toml               dependency declarations
 skills/screenmcp/SKILL.md    how/when Claude should drive the desktop
@@ -66,10 +83,14 @@ tests/                       unit + end-to-end stdio tests
 
 ## Platform notes
 
-- **macOS:** grant **Screen Recording** and **Accessibility** to the launching app on
-  first use, then restart it.
+- **macOS:** no `python` command exists by default (only `python3`) — the launcher
+  handles that. Grant **Screen Recording** and **Accessibility** to the launching
+  app (Terminal, the Claude app, your IDE) on first use, then restart it.
 - **Linux:** `sudo apt install wmctrl xdotool` for window operations. Wayland is
-  best-effort.
+  best-effort. If venv creation fails: `sudo apt install python3-venv` (or install
+  [uv](https://docs.astral.sh/uv/)).
+- **Windows:** `python` from python.org or the Microsoft Store both work; the
+  launcher also tries the `py -3` launcher and `python3`.
 - `ui_tree` and `elevate` are not implemented in this local stdio server.
 
 ## Credits
